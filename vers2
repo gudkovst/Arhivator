@@ -1,0 +1,126 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<malloc.h>
+
+typedef struct Xaffman_node{
+	char data;
+	int list;
+	struct Xaffman_node* left;
+	struct Xaffman_node* right;
+	struct Xaffman_node* next;
+	int kol;
+}Xnode;
+
+Xnode* derevo[256] = {NULL};
+int count = 0;
+char kod[256][100];
+
+void create(){
+	for (int i = 0; i < 256; i++){
+		derevo[i] = (Xnode*)malloc(sizeof(Xnode));
+		derevo[i]->data = i;
+		derevo[i]->list = 1;
+		derevo[i]->left = NULL;
+		derevo[i]->right = NULL;
+		derevo[i]->next = NULL;
+		derevo[i]->kol = 0;
+	}
+}
+
+void initialization(char x){
+	if (!derevo[x]->kol)
+		count++;
+	derevo[x]->kol++;
+}
+
+void swap(Xnode** a, Xnode** b){
+	Xnode* t = *a;
+	*a = *b;
+	*b = t;
+}
+
+void sort(){
+	for (int i = 0; i < 255; i++)
+ 		for (int j = 254; j >= i; j--)
+ 			if (derevo[j]->kol > derevo[j+1]->kol)
+ 				swap(&derevo[j], &derevo[j+1]);
+}
+
+Xnode* make_tree(int N){
+	int k = N;
+	for (int i = 256 - N; i < 255; i++)
+		derevo[i]->next = derevo[i + 1];
+	Xnode* first = derevo[256 - N];
+	while(k - 1){
+		Xnode* p = (Xnode*)malloc(sizeof(Xnode));
+		p->list = 0;
+		p->right = first;
+		p->left = first->next;
+		p->kol = p->right->kol + p->left->kol;
+		Xnode* t = p->left;
+		while (t->next && t->next->kol < p->kol)
+			t = t->next;
+		p->next = t->next;
+		t->next = p;
+		first = first->next->next;
+		k--;
+	}
+	return first;
+}
+void write_tree(Xnode* p){
+	if (p->list){
+		printf("%c", p->data);
+		return;
+	}
+	if (p->left){
+		printf("0");
+		write_tree(p->left);
+	}
+	if (p->right){
+		printf("1");
+		write_tree(p->right);
+	}
+}
+
+void razdacha_kod(Xnode* h, char* sk, int k){
+	if (h->list){
+		for (int i = 0; i<k; i++)
+			kod[h->data][i] = sk[i];
+		return;
+	}
+	sk[k] = '0';
+	razdacha_kod(h->left, sk, k + 1);
+	sk[k] = '1';
+	razdacha_kod(h->right, sk, k + 1);
+}
+char decoding(Xnode* h){
+	if (h->list)
+		return h->data;
+	int bit_code;
+	scanf("%d", &bit_code);
+	if (bit_code)
+		return decoding(h->right);
+	else
+		return decoding(h->left);
+}
+
+
+int main(){
+	int N;
+	scanf("%d\n", &N);
+	create();
+	for (int i = 0; i<N; i++){
+		char c;
+		scanf("%c", &c);
+		initialization(c);
+	}
+	sort();
+	Xnode* root = make_tree(count);
+	char* strkod = (char*)malloc(100 * sizeof(char));
+	for (int i = 0; i < 100; i++)
+		strkod[i] = '\0';
+	razdacha_kod(root, strkod, 0);
+	write_tree(root);
+	return 0;
+}
