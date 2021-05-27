@@ -1,13 +1,12 @@
-// arxivator.c
-
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<stdlib.h>
 #include<malloc.h>
+#include<string.h>
 
-include "arxivator.h"
+#include "st_node.h"
 
-Xnode* derevo[256] = { NULL };
+Xnode * derevo[256] = { NULL };
 char kod[256][100];
 int count = 0;
 
@@ -78,37 +77,37 @@ void razdacha_kod(Xnode* h, char* sk, int k) {
 
 void write_tree(Xnode* p, FILE* out) {
 	if (p->list) {
-		fwrite('1', 1, 1, out);
-		fwrite(&p->data, sizeof(char), 1, out);
+		fprintf(out, "1");
+		fprintf(out, "%s", p->data);
 		return;
 	}
-	fwrite('0', 1, 1, out);
-	if (p->left) 
+	fprintf(out, "0");
+	if (p->left)
 		write_tree(p->left, out);
-	if (p->right) 
-		write_tree(p->right, out);
+	if (p->right)
+		write_tree(p->right, out);   
 }
 
 void print_kod(FILE* in, FILE* out) {
 	char c;
-	fread(&c, sizeof(char), 1, in);
-	fwrite(&kod[c], sizeof(char), strlen(kod[c]), out);
+	fscanf(in, "%c", &c);
+	fprintf(out, "%s", kod[c]);
 }
 
-void arxivation(FILE* in, FILE* out){
-	FILE* in1 = in;
+void arxivation(FILE* in, FILE* in1, FILE* out) {
 	create();
-		while (feof(in)) {
-			char c;
-			fread(&c, sizeof(char), 1, in);
-			initialization(c);
-		}
-		sort();
-		Xnode* root = make_tree(count);
-		char* strkod = (char*)malloc(100 * sizeof(char));
-		for (int i = 0; i < 100; i++)
-			strkod[i] = '\0';
-		razdacha_kod(root, strkod, 0);
-		write_tree(root, out);
+	while (feof(in)) {
+		char c;
+		fscanf(in, "%c", &c);
+		initialization(c);
+	}
+	sort();
+	Xnode* root = make_tree(count);
+	char* strkod = (char*)malloc(100 * sizeof(char));
+	for (int i = 0; i < 100; i++)
+		strkod[i] = '\0';
+	razdacha_kod(root, strkod, 0);
+	write_tree(root, out);
+	while (feof(in1))
 		print_kod(in1, out);
 }

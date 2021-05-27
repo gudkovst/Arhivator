@@ -8,17 +8,18 @@
 
 
 int main(int argc, char* argv[]) {
-	FILE* in, * out;
+	FILE* in, *in1, * out;
 	if (argc == 1) {
 		printf("Not parameters\n");
 		return 0;
 	}
 	char komanda = argv[1];
-	in = fopen(argv[2], "rb");
-	out = fopen(argv[3], "wb");
+	in = fopen(argv[2], "r");
+	in1 = fopen(argv[2], "r");
+	out = fopen(argv[3], "w");
 	if (komanda == 'a')
-		arxivation(in, out);
-	if (komanda == 'x') 
+		arxivation(in, in1, out);
+	if (komanda == 'x')
 		dearxivation(in, out);
 	fclose(in);
 	fclose(out);
