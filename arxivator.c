@@ -95,20 +95,26 @@ void print_kod(FILE* in, FILE* out) {
 	fwrite(&kod[c], sizeof(char), strlen(kod[c]), out);
 }
 
-void arxivation(FILE* in, FILE* out){
-	FILE* in1 = in;
+void arxivation(char* file_in, char* file_out){
+	FILE* in, * out;
+	in = fopen(file_in, "rb");
+	out = fopen(file_out, "wb");
 	create();
-		while (feof(in)) {
-			char c;
-			fread(&c, sizeof(char), 1, in);
-			initialization(c);
-		}
-		sort();
-		Xnode* root = make_tree(count);
-		char* strkod = (char*)malloc(100 * sizeof(char));
-		for (int i = 0; i < 100; i++)
-			strkod[i] = '\0';
-		razdacha_kod(root, strkod, 0);
-		write_tree(root, out);
-		print_kod(in1, out);
+	while (feof(in)) {
+		char c;
+		fread(&c, sizeof(char), 1, in);
+		initialization(c);
+	}
+	fclose(in);
+	sort();
+	Xnode* root = make_tree(count);
+	char* strkod = (char*)malloc(100 * sizeof(char));
+	for (int i = 0; i < 100; i++)
+		strkod[i] = '\0';
+	razdacha_kod(root, strkod, 0);
+	in = fopen(file_in, "rb");
+	write_tree(root, out);
+	print_kod(in, out);
+	fclose(in);
+	fclose(out);
 }
