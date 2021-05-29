@@ -49,8 +49,13 @@ char decoding(Xnode* h, FILE* in) {
 		return decoding(h->left, in);
 }
 
-void dearxivation(FILE* in, FILE* out){
+void dearxivation(char* file_in, char* file_out){
+	FILE* in, * out;
+	in = fopen(file_in, "rb");
+	out = fopen(file_out, "wb");
 	Xnode* root = NULL;
 	restore_tree(root, in);
 	decoding(root, in);
+	fclose(in);
+	fclose(out);
 }
