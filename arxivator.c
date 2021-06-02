@@ -5,9 +5,9 @@
 #include<stdlib.h>
 #include<malloc.h>
 
-include "arxivator.h"
+#include "st_node.h"
 
-Xnode* derevo[256] = { NULL };
+Xnode * derevo[256] = { NULL };
 char kod[256][100];
 int count = 0;
 
@@ -77,34 +77,35 @@ void razdacha_kod(Xnode* h, char* sk, int k) {
 }
 
 void write_tree(Xnode* p, FILE* out) {
+	char z;
 	if (p->list) {
-		fwrite('1', 1, 1, out);
+		z = '\1';
+		fwrite(&z, sizeof(char), 1, out);
 		fwrite(&p->data, sizeof(char), 1, out);
 		return;
 	}
-	fwrite('0', 1, 1, out);
-	if (p->left) 
+	z = '\0';
+	fwrite(&z, sizeof(char), 1, out);
+	if (p->left)
 		write_tree(p->left, out);
-	if (p->right) 
+	if (p->right)
 		write_tree(p->right, out);
 }
 
 void print_kod(FILE* in, FILE* out) {
 	char c;
-	fread(&c, sizeof(char), 1, in);
-	fwrite(&kod[c], sizeof(char), strlen(kod[c]), out);
+	while (fread(&c, sizeof(char), 1, in))
+		fwrite(&kod[c], sizeof(char), strlen(kod[c]), out);
 }
 
-void arxivation(char* file_in, char* file_out){
+void arxivation(char* file_in, char* file_out) {
 	FILE* in, * out;
+	char c;
 	in = fopen(file_in, "rb");
 	out = fopen(file_out, "wb");
 	create();
-	while (feof(in)) {
-		char c;
-		fread(&c, sizeof(char), 1, in);
+	while (fread(&c, sizeof(char), 1, in)) 
 		initialization(c);
-	}
 	fclose(in);
 	sort();
 	Xnode* root = make_tree(count);
