@@ -11,9 +11,9 @@ int main(int argc, char* argv[]) {
 		printf("Not parameters\n");
 		return 0;
 	}
-	if (argv[1] == 'a')
+	if (argv[1][0] == 'a')
 		arxivation(argv[2], argv[3]);
-	if (argv[1] == 'x')
+	if (argv[1][0] == 'x')
 		dearxivation(argv[2], argv[3]);
 	return 0;
 }
