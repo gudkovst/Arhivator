@@ -1,13 +1,8 @@
 // arxivator.h
 
-typedef struct Xaffman_node {
-	char data;
-	int list;
-	struct Xaffman_node* left;
-	struct Xaffman_node* right;
-	struct Xaffman_node* next;
-	int kol;
-}Xnode;
+#pragma once
+#include<stdio.h>
+#include "st_node.h"
 
 void create();
 void initialization(char x);
