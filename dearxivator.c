@@ -7,67 +7,63 @@
 
 #include "st_node.h"
 
-void restore_tree(Xnode* h, FILE* in) {
+Xnode* create_node(char k, Xnode* l, Xnode* r) {
+	Xnode* p = (Xnode*)malloc(sizeof(Xnode));
+	p->list = k;
+	p->left = l;
+	p->right = r;
+	return p;
+}
+
+Xnode* restore_tree(FILE* in) {
 	char c;
 	fread(&c, sizeof(char), 1, in);
-	printf("%c ", c);
-	if (c == '0') {
-		Xnode* p = (Xnode*)malloc(sizeof(Xnode));
-		p->list = 0;
-		p->left = NULL;
-		p->right = NULL;
-		if (!h) {
-			h = p;
-			restore_tree(h, in);
-		}
-		else if (!h->left) {
-			h->left = p;
-			restore_tree(h->left, in);
-		}
-		else {
-			h->right = p;
-			restore_tree(h->right, in);
-		}
+	if (!c) {
+		Xnode* l = restore_tree(in);
+		Xnode* r = restore_tree(in);
+		Xnode* h = create_node(0, l, r);
+		
 	}
 	else {
-		char sim;
-		Xnode* p = (Xnode*)malloc(sizeof(Xnode));
-		p->list = 1;
-		p->left = NULL;
-		p->right = NULL;
-		fread(&sim, sizeof(char), 1, in);
-		p->data = sim;
-		return;
+		Xnode* p = create_node(1, NULL, NULL);
+		fread(&p->data, sizeof(char), 1, in);
+		return p;
 	}
 }
 
-char decoding(Xnode* h, FILE* in) {
-	if (h->list)
-		return h->data;
+void decoding(Xnode* h, FILE* in, FILE* out) {
+	if (h->list) {
+		fwrite(&h->data, sizeof(char), 1, out);
+		return;
+	}
 	char bit_code;
 	fread(&bit_code, sizeof(char), 1, in);
-	if (bit_code)
-		return decoding(h->right, in);
+	if (bit_code == 1)
+		decoding(h->right, in, out);
 	else
-		return decoding(h->left, in);
+		decoding(h->left, in, out);
 }
-void printp(Xnode* t) {
-	if (!t) return;
-	printf("%c ", t->data);
-	printp(t->left);
-	printp(t->right);
+
+void printp(Xnode* h) {
+	if (h->list) {
+		printf("%c", h->data);
+		return;
+	}
+	printf("0");
+	printp(h->left);
+	printf("1");
+	printp(h->right);
 }
 
 void dearxivation(char* file_in, char* file_out) {
 	FILE* in, * out;
 	in = fopen(file_in, "rb");
 	out = fopen(file_out, "wb");
-	Xnode* root = NULL;
-	restore_tree(root, in);
-	if (root)
-		printp(root);
-	else printf("1 ");
-	decoding(root, in);
+	int count;
+	fread(&count, sizeof(int), 1, in);
+	Xnode* root = restore_tree(in);
+	for (int i = 0; i < count; i++)
+		decoding(root, in, out);
 	fclose(in);
 	fclose(out);
 }
