@@ -13,3 +13,4 @@ void razdacha_kod(Xnode* h, char* sk, int k);
 void write_tree(Xnode* p, FILE* out);
 void print_kod(FILE* in, FILE* out);
 void arxivation(char* file_in, char* file_out);
+
