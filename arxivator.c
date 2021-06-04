@@ -94,7 +94,7 @@ void write_tree(Xnode* p, FILE* out) {
 
 void print_kod(FILE* in, FILE* out) {
 	char c, byte = 0;
-	int k = 0
+	int k = 0;
 	while (fread(&c, sizeof(char), 1, in)){
 		int n = strlen(kod[c]);
 		for (int i = 0; i < n; i++){
