@@ -35,10 +35,9 @@ void decoding(Xnode* h, FILE* in, FILE* out) {
 	Xnode* p = h;
 	int k = 0;
 	char byte;
+	fread(&byte, sizeof(char), 1, in);
 	while (COUNT){
-		char bit;
-		fread(&byte, sizeof(char), 1, in);
-		bit = byte && (1 << (7 - k));
+		char bit = byte & (1 << (7 - k));
 		if (bit)
 			p = p->right;
 		else
