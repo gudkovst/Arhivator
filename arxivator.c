@@ -70,9 +70,9 @@ void razdacha_kod(Xnode* h, char* sk, int k) {
 			kod[h->data][i] = sk[i];
 		return;
 	}
-	sk[k] = 0;
-	razdacha_kod(h->left, sk, k + 1);
 	sk[k] = 1;
+	razdacha_kod(h->left, sk, k + 1);
+	sk[k] = 2;
 	razdacha_kod(h->right, sk, k + 1);
 }
 
@@ -98,7 +98,7 @@ void print_kod(FILE* in, FILE* out) {
 	while (fread(&c, sizeof(char), 1, in)){
 		int n = strlen(kod[c]);
 		for (int i = 0; i < n; i++){
-			byte = byte | kod[c][i] << (7 - k);
+			byte = byte | ((kod[c][i] - 1) << (7 - k));
 			k = (k + 1) % 8;
 			if (!k){
 				fwrite(&byte, sizeof(char), 1, out);
