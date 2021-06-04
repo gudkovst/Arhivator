@@ -10,12 +10,12 @@
 Xnode* derevo[256] = { NULL };
 char kod[256][100];
 int count = 0;
+long long COUNT = 0;
 
 void create() {
 	for (int i = 0; i < 256; i++) {
 		derevo[i] = (Xnode*)malloc(sizeof(Xnode));
 		derevo[i]->data = i;
-		derevo[i]->list = 1;
 		derevo[i]->left = NULL;
 		derevo[i]->right = NULL;
 		derevo[i]->next = NULL;
@@ -24,8 +24,10 @@ void create() {
 }
 
 void initialization(char x) {
-	count++;
+	if (!derevo[x]->kol)
+		count++;
 	derevo[x]->kol++;
+	COUNT++;
 }
 
 void swap(Xnode** a, Xnode** b) {
@@ -48,7 +50,6 @@ Xnode* make_tree(int N) {
 	Xnode* first = derevo[256 - N];
 	while (k - 1) {
 		Xnode* p = (Xnode*)malloc(sizeof(Xnode));
-		p->list = 0;
 		p->right = first;
 		p->left = first->next;
 		p->kol = p->right->kol + p->left->kol;
@@ -64,12 +65,12 @@ Xnode* make_tree(int N) {
 }
 
 void razdacha_kod(Xnode* h, char* sk, int k) {
-	if (h->list) {
+	if (!h->left && !h->right) {
 		for (int i = 0; i < k; i++)
 			kod[h->data][i] = sk[i];
 		return;
 	}
-	sk[k] = 2;
+	sk[k] = 0;
 	razdacha_kod(h->left, sk, k + 1);
 	sk[k] = 1;
 	razdacha_kod(h->right, sk, k + 1);
@@ -77,7 +78,7 @@ void razdacha_kod(Xnode* h, char* sk, int k) {
 
 void write_tree(Xnode* p, FILE* out) {
 	char z;
-	if (p->list) {
+	if (!p->left && !p->right) {
 		z = 1;
 		fwrite(&z, sizeof(char), 1, out);
 		fwrite(&p->data, sizeof(char), 1, out);
@@ -92,9 +93,21 @@ void write_tree(Xnode* p, FILE* out) {
 }
 
 void print_kod(FILE* in, FILE* out) {
-	char c;
-	while (fread(&c, sizeof(char), 1, in))
-		fwrite(&kod[c], sizeof(char), strlen(kod[c]), out);
+	char c, byte = 0;
+	int k = 0
+	while (fread(&c, sizeof(char), 1, in)){
+		int n = strlen(kod[c]);
+		for (int i = 0; i < n; i++){
+			byte = byte | kod[c][i] << (7 - k);
+			k = (k + 1) % 8;
+			if (!k){
+				fwrite(&byte, sizeof(char), 1, out);
+				byte = 0;
+			}
+		}
+	}
+	if (byte)
+		fwrite(&byte, sizeof(char), 1, out);
 }
 
 void arxivation(char* file_in, char* file_out) {
@@ -105,6 +118,7 @@ void arxivation(char* file_in, char* file_out) {
 	create();
 	while (fread(&c, sizeof(char), 1, in))
 		initialization(c);
+	fwrite(&COUNT, sizeof(long long), 1, out);
 	fclose(in);
 	sort();
 	Xnode* root = make_tree(count);
@@ -112,9 +126,8 @@ void arxivation(char* file_in, char* file_out) {
 	for (int i = 0; i < 100; i++)
 		strkod[i] = '\0';
 	razdacha_kod(root, strkod, 0);
-	in = fopen(file_in, "rb");
-	fwrite(&count, sizeof(int), 1, out);
 	write_tree(root, out);
+	in = fopen(file_in, "rb");
 	print_kod(in, out);
 	fclose(in);
 	fclose(out);
