@@ -120,6 +120,10 @@ void arxivation(char* file_in, char* file_out) {
 		initialization(c);
 	fwrite(&COUNT, sizeof(long long), 1, out);
 	fclose(in);
+	if (!COUNT){
+		fclose(out);
+		return;
+	}
 	sort();
 	Xnode* root = make_tree(count);
 	char* strkod = (char*)malloc(100 * sizeof(char));
