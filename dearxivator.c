@@ -59,6 +59,8 @@ void dearxivation(char* file_in, char* file_out) {
 	in = fopen(file_in, "rb");
 	out = fopen(file_out, "wb");
 	fread(&COUNT, sizeof(long long), 1, in);
+	if (!COUNT)
+		return;
 	Xnode* root = restore_tree(in);
 	decoding(root, in, out);
 	fclose(in);
