@@ -7,13 +7,21 @@
 
 
 int main(int argc, char* argv[]) {
-	if (argc == 1) {
+	if (argc <= 2) {
 		printf("Not parameters\n");
 		return 0;
 	}
-	if (argv[1][0] == 'a')
-		arxivation(argv[2], argv[3]);
-	if (argv[1][0] == 'x')
-		dearxivation(argv[2], argv[3]);
+	if (argv[1][0] == 'a'){
+		if (argc == 3)
+			arxivation(argv[2], "z.bin");
+		else	
+			arxivation(argv[2], argv[3]);
+	}
+	if (argv[1][0] == 'x'){
+		if (argc == 3)
+			printf("Few parameters\n");
+		else	
+			dearxivation(argv[2], argv[3]);
+	}
 	return 0;
 }
