@@ -1,8 +1,7 @@
 #pragma once
 
 typedef struct Xafman_node {
-	char data;
-	int list;
+	unsigned char data;
 	struct Xafman_node* left;
 	struct Xafman_node* right;
 	struct Xafman_node* next;
