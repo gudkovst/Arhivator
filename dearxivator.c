@@ -17,7 +17,7 @@ Xnode* create_node(Xnode* l, Xnode* r) {
 }
 
 Xnode* restore_tree(FILE* in) {
-	char c;
+	unsigned char c;
 	fread(&c, sizeof(char), 1, in);
 	if (!c) {
 		Xnode* l = restore_tree(in);
@@ -34,15 +34,15 @@ Xnode* restore_tree(FILE* in) {
 void decoding(Xnode* h, FILE* in, FILE* out) {
 	Xnode* p = h;
 	int k = 0;
-	char byte;
+	unsigned char byte;
 	fread(&byte, sizeof(char), 1, in);
-	while (COUNT){
-		char bit = byte & (1 << (7 - k));
+	while (COUNT) {
+		unsigned char bit = byte & (1 << (7 - k));
 		if (bit)
 			p = p->right;
 		else
 			p = p->left;
-		if (!p->left && !p->right){
+		if (!p->left && !p->right) {
 			fwrite(&p->data, sizeof(char), 1, out);
 			COUNT--;
 			p = h;
